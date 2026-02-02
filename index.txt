@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第一顧問 Top One Consulting | 專業遺囑規劃與財產試算</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-blue: #002347; /* 深海藍 */
+            --gold: #D4AF37;        /* 晨曦金 */
+            --bg-light: #fdfdfd;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* 基礎設定 */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Noto Sans TC', "Microsoft JhengHei", sans-serif; 
+            background: var(--bg-light); 
+            color: var(--text-dark); 
+            line-height: 1.8;
+        }
+
+        h1, h2, h3, .serif { font-family: 'Noto Serif TC', serif; }
+
+        /* 導覽列：置頂且滾動縮小 */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--white);
+            z-index: 2000;
+            transition: var(--transition);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            padding: 20px 5%;
+        }
+        header.shrink { padding: 10px 5%; }
+
+        nav {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .logo-icon { width: 45px; height: 45px; transition: var(--transition); }
+        header.shrink .logo-icon { width: 35px; height: 35px; }
+        .brand-name { font-size: 1.4rem; font-weight: 700; color: var(--primary-blue); letter-spacing: 1px; }
+
+        .nav-links { display: flex; list-style: none; gap: 25px; }
+        .nav-links a { 
+            text-decoration: none; 
+            color: var(--text-dark); 
+            font-weight: 500; 
+            font-size: 1rem;
+            position: relative;
+            transition: var(--transition);
+        }
+        /* 點擊變色加底線效果 */
+        .nav-links a:hover, .nav-links a.active { 
+            color: var(--gold); 
+            text-decoration: underline;
+            text-underline-offset: 8px;
+        }
+
+        /* 內容區塊顯示控制 (模擬非單頁式) */
+        .page-section { 
+            display: none; 
+            padding: 140px 5% 80px; 
+            max-width: 1100px; 
+            margin: auto; 
+            animation: fadeIn 0.6s ease;
+        }
+        .page-section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 標題樣式 */
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h2 { font-size: 2.4rem; color: var(--primary-blue); margin-bottom: 15px; }
+        .section-header .line { width: 50px; height: 3px; background: var(--gold); margin: auto; }
+
+        /* 五種遺囑卡片 (點擊展開) */
+        .will-card {
+            background: var(--white);
+            border-radius: 4px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid #eee;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .will-card:hover { border-color: var(--gold); }
+        
+        .will-header {
+            padding: 25px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--white);
+            transition: var(--transition);
+        }
+        .will-header:hover h3 { color: var(--gold); text-decoration: underline; }
+        .will-header h3 { font-size: 1.3rem; color: var(--primary-blue); }
+        .will-header .icon { color: var(--gold); font-size: 1.2rem; transition: var(--transition); }
+
+        .will-content {
+            padding: 0 30px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease;
+            background: #fafafa;
+            color: #555;
+            font-size: 1.05rem;
+        }
+        .will-card.open .will-content { max-height: 1000px; padding: 30px; }
+        .will-card.open .icon { transform: rotate(180deg); }
+
+        /* 新聞與案例樣式 */
+        .news-item { background: white; padding: 40px; border-radius: 8px; margin-bottom: 40px; border-left: 5px solid var(--gold); box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .news-tag { color: var(--gold); font-weight: bold; font-size: 0.9rem; display: block; margin-bottom: 10px; }
+        .news-title { font-size: 1.6rem; color: var(--primary-blue); margin-bottom: 20px; }
+        .news-body { white-space: pre-line; color: #444; }
+
+        /* FAQ 區塊 */
+        .faq-item { border-bottom: 1px solid #eee; }
+
+        /* 頁尾 */
+        footer { background: var(--primary-blue); color: var(--white); padding: 60px 5% 30px; text-align: center; }
+        .footer-logo { font-size: 1.5rem; color: var(--gold); margin-bottom: 20px; font-weight: bold; }
+
+        /* 手機版調整 */
+        @media (max-width: 768px) {
+            .nav-links { display: none; } /* 簡化版 */
+            .section-header h2 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header id="mainHeader">
+        <nav>
+            <div class="logo-area" onclick="showPage('home')">
+                <svg class="logo-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="45" stroke="#D4AF37" stroke-width="2"/>
+                    <path d="M50 20V30M50 70V80M20 50H30M70 50H80" stroke="#D4AF37" stroke-width="2"/>
+                    <path d="M45 55L75 25C77 23 80 23 82 25C84 27 84 30 82 32L52 62" stroke="#002347" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M45 55L35 75L52 62L45 55Z" fill="#002347"/>
+                </svg>
+                <div class="brand-name">第一顧問 Top One Consulting</div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="javascript:void(0)" onclick="showPage('home')" id="link-home" class="active">首頁</a></li>
+                <li><a href="javascript:void(0)" onclick="showPage('will-intro')" id="link-will-intro">遺囑介紹</a></li>
+                <li><a href="javascript:void(0)" onclick="showPage('calculator')" id="link-calculator">財產試算</a></li>
+                <li><a href="javascript:void(0)" onclick="showPage('test')" id="link-test">自我測驗</a></li>
+                <li><a href="javascript:void(0)" onclick="showPage('cases')" id="link-cases">案例介紹</a></li>
+                <li><a href="javascript:void(0)" onclick="showPage('faq')" id="link-faq">常見問題</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="home" class="page-section active">
+        <div class="section-header">
+            <h2>遺產繼承，交給專業來領航</h2>
+            <div class="line"></div>
+        </div>
+        
+        <div style="background: white; padding: 40px; border-radius: 8px; text-align: center; margin-bottom: 40px;">
+            <h3 style="color: var(--gold); margin-bottom: 20px;">📅 講座資訊</h3>
+            <p style="font-size: 1.2rem;"><b>4 ~ 6 月講座預約中</b></p>
+            <p style="color: #666; margin-top: 10px;">名額有限，請聯繫顧問預約席次。</p>
+        </div>
+
+        <div class="section-header">
+            <h3>服務介紹</h3>
+        </div>
+        <p style="text-align: center; color: #666; max-width: 800px; margin: auto;">
+            結合律師、會計師、地政士三方專業，為您提供從法律效力、稅務優化到產權登記的一站式精準服務。
+        </p>
+    </main>
+
+    <main id="will-intro" class="page-section">
+        <div class="section-header">
+            <h2>五種遺囑形式介紹</h2>
+            <p>點擊下方項目了解詳情</p>
+            <div class="line"></div>
+        </div>
+
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>自書遺囑（親筆書寫的心願）</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+                鋪開一張白紙，準備為人生這本大書寫下最後的後記。自書遺囑就像是一封跨越時空的情書，它不需要律師在場，也不必驚動政府機關，唯一的門檻就是你那份想親口說明白的真心。你必須拿起筆，從頭到尾一字一句地親手書寫，因為那些筆跡的轉折與力道，就是法律認證你意志最直接的證據；這也意味著，無論現在電腦打字多麼方便、排版多麼精美，只要是印表機印出來的，在法律眼中都缺乏了那份「活著的溫度」。
+
+在這份手稿中，你必須清晰地烙印下年、月、日，並落款簽名，這才算是一份完整的交棒宣言。如果書寫過程中不小心寫錯了字，千萬別直接揉掉或用修正帶塗抹，法律要求你像對待歷史文件般謹慎：在塗改處旁註明增減的字數，並再次簽名以示負責。這份遺囑雖然外表樸實，卻擁有極高的隱私性，讓你能毫無顧忌地交代心愛的房產要留給誰，或是那疊珍貴的黑膠唱片該交託給哪位知音，讓愛在文字的墨跡中，優雅地傳承下去。
+
+                <br><br>
+                <b>法律要求：</b> 全文親筆書寫、記明年、月、日、親自簽名。
+            </div>
+        </div>
+
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>公證遺囑（官方認證的守護）</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+                當您希望為家人留下的不只是財富，而是一份無後顧之憂的長久和平時，公證遺囑就像是為您的心願穿上了一層堅固的法律盔甲。這是一個充滿儀式感的過程，您會與兩位精心挑選的見證人一同來到公證人面前，在法律專家的見證下，親口說出您對未來最深切的打算。公證人會耐心地傾聽您的每一句話，並將其轉化為嚴謹的文字紀錄，隨後透過宣讀與講解，確保現場的每一個人都能精準理解您的意志，不讓愛在解讀中出現一絲偏差。
+
+這份遺囑最大的溫暖，在於它排除了所有可能的不確定性。因為有了公證人的專業背書與國家級的嚴格程序，它擁有極高的法律效力，能有效避免日後親人間因誤解而產生的嫌隙與紛爭。對於不擅長法律條文、或是擔心未來執行遇到困難的人來說，公證遺囑提供了一種「一勞永逸」的守護方式。您在專業人士的引導下，從容地交棒，讓這份最後的叮嚀不僅帶著法律的重量，更帶著您對家族和諧最深沉的體貼。
+
+            </div>
+        </div>
+
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>密封遺囑（優雅深沉的祕密）</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+                有些話，您或許想等轉身之後，再溫柔地告訴親友，如果您追求的是一種對隱私的絕對尊重，希望將最深沉的心事留到最後一刻才揭曉，密封遺囑就像是一封裝進時光膠囊的神祕信箋。這份遺囑適合那些心思細膩、希望在生前保有完整個人空間的人。您可以親手寫下內容，或者請信任的人代為繕寫，但在完成後，您必須親自在這份遺囑上落款，並將它放入信封內嚴密分封。最關鍵的儀式在於，您要在封口處親筆簽名，這不僅是一個防偽的標記，更像是一道私人的封條，象徵著這份意志在開啟之前，除了您之外，沒有任何人能窺探其中的字裡行間。
+這份「神祕感」的背後，依然有著法律的嚴謹守護。您需要帶著這封已密封的信件，在兩位見證人的陪同下走向公證人，向他們鄭重聲明：「這封信裡，裝著我最真實的願望。」雖然見證人與公證人無法得知信封內的具體分配，但他們會在封面上簽名見證，記錄下這個神聖的交託時刻。這種方式巧妙地結合了保密性與公信力，讓您既能體貼地避開生前可能產生的家庭紛擾，又能確保在您轉身之後，那份被溫柔封存的心意，能如同您親臨現場般，精準且有力地傳達到每一位摯愛的手中。
+
+            </div>
+        </div>
+
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>代筆遺囑（溫暖捉刀的傳承）</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+                當歲月讓體力漸漸流失，或者手部的顫抖讓提筆寫字變得艱難時，代筆遺囑就像是法律為您伸出的一雙溫暖援手。它不要求您強撐著身體親自書寫，而是允許您用最自然、最輕鬆的方式，坐下來與人談心。您只需要找來三位值得信賴的夥伴擔任見證人，其中一位會細心地擔任您的「速記官」。您只要清清楚楚地說出心裡的打算，代筆人就會將您的每一句叮嚀轉化為文字。這種方式讓意志的傳承不再受限於身體的疲累，即使是臥病在床，也能透過他人的筆尖，延續您對家人的關懷。
+為了確保這份「代寫的心意」沒有出錯，代筆人在紀錄完成後，必須大聲且清晰地朗讀全文給您聽。這是一個再次確認的感人時刻，您在眾人的環繞下點點頭，認可了這份文件就是您最真實的告白。隨後，在場的所有見證人與您都會一同簽名落款，若您真的連簽名都感到吃力，法律也體貼地允許用印泥按下指印來代替。這種方式充滿了人與人之間的互助與見證，讓您的意志在眾人的守護下變得清晰且堅定，確保那些說出口的愛與財產分配，都能在未來得到最精準的執行。
+
+            </div>
+        </div>
+
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>口授遺囑（危急時刻的叮嚀）</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+                在生命面臨突如其來的風雨，或是處於與時間賽跑的危急關頭時，口授遺囑是法律為您保留的最後一道慈悲之窗。當環境緊迫到無法找尋紙筆、或是體力已無法支撐繁瑣的公證程序時，這份遺囑允許您用「說」的方式，在最後一刻捕捉最真切的願望。您只需要在兩位見證人的陪伴下，親口吐露內心的叮嚀，由其中一位見證人筆錄或全程錄音，並將這份臨終前的託付密封存證。它不需要精美的排版，也不需要正式的事務所，在那一刻，您沙啞的語音或微弱的交代，就是世間最神聖、最有力的法律證據。
+然而，這份緊急的遺言帶有一種「患難見真情」的臨時色彩。因為它是為了應對極端情況而生，法律也特別規定，如果您在大難不死、身體康復後的延續歲月中，已經有能力改用其他更穩妥的方式重寫遺囑，那麼這份口頭宣告在三個月後便會自動功成身退。這是一個體貼的緩衝，讓您在危難時不留遺憾，而在重獲新生後，能有更從容的時間去重新規劃人生的新藍圖。這份遺囑存在的意義，就是確保在生命最脆弱的邊緣，每一句發自肺腑的愛與交代，都不會因為環境的艱困而被遺忘。
+
+            </div>
+        </div>
+    </main>
+
+    <main id="calculator" class="page-section">
+        <div class="section-header">
+            <h2>財產試算系統</h2>
+            <div class="line"></div>
+        </div>
+        <div style="text-align: center; color: #999; padding: 100px 0; border: 2px dashed #eee;">
+            <p>【財產稅試算、分配試算、特留分試算模組建置中】</p>
+        </div>
+    </main>
+
+    <main id="test" class="page-section">
+        <div class="section-header">
+            <h2>自我測驗</h2>
+            <div class="line"></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div style="background: white; padding: 40px; border-radius: 8px; text-align: center;">
+                <h3>心理測驗</h3>
+                <p style="color: #999; margin-top: 20px;">內容即將上線</p>
+            </div>
+            <div style="background: white; padding: 40px; border-radius: 8px; text-align: center;">
+                <h3>適性問卷</h3>
+                <p style="color: #999; margin-top: 20px;">內容即將上線</p>
+            </div>
+        </div>
+    </main>
+
+    <main id="cases" class="page-section">
+        <div class="section-header">
+            <h2>案例介紹與報導</h2>
+            <div class="line"></div>
+        </div>
+
+        <div class="news-item">
+            <span class="news-tag">名人專訪</span>
+            <h3 class="news-title">沈春華自曝 40 歲即預立遺囑：是給家人的「愛與資產」</h3>
+            <div class="news-body">
+                資深金鐘主播沈春華分享，她早在 40 歲、人生正值壯年時，就已親筆寫下人生第一封遺囑...
+                「人生就像打電話，不是你先掛，就是我掛。」沈春華以豁達口氣談論生死。
+            </div>
+        </div>
+
+        <div class="news-item">
+            <span class="news-tag">指標判決</span>
+            <h3 class="news-title">張榮發百億遺囑案塵埃落定 帶動「生前規劃」熱潮</h3>
+            <div class="news-body">
+                最高法院最終判決確立了「尊重立遺囑人自由意願」的法治精神... 
+                專家指出：張榮發這份遺囑案向世人證明，預立遺囑並非對死亡的恐懼，而是一種對家人的長遠保護。
+            </div>
+        </div>
+    </main>
+
+    <main id="faq" class="page-section">
+        <div class="section-header">
+            <h2>常見問題 (FAQ)</h2>
+            <div class="line"></div>
+        </div>
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>Q: 預立遺囑一定要公證人嗎？</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+                不一定。依照民法規定，若您選擇「自書遺囑」且符合法定格式（全文親筆、日期、簽名），不經過公證依然具有法律效力。
+            </div>
+        </div>
+
+            <div class="line"></div>
+        </div>
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>Q: 預立遺囑一定要公證人嗎？</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+                不一定。依照民法規定，若您選擇「自書遺囑」且符合法定格式（全文親筆、日期、簽名），不經過公證依然具有法律效力。
+            </div>
+        </div>
+            <div class="line"></div>
+        </div>
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>Q: 預立遺囑一定要公證人嗎？</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+                不一定。依照民法規定，若您選擇「自書遺囑」且符合法定格式（全文親筆、日期、簽名），不經過公證依然具有法律效力。
+            </div>
+        </div>
+            <div class="line"></div>
+        </div>
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>Q: 什麼樣的人適合寫遺囑？</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+               有心願的人、有在照顧長輩或子女的人、有想要回饋社會的人都適合寫遺囑。
+            </div>
+        </div>
+            <div class="line"></div>
+        </div>
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>Q: 什麼時候適合寫遺囑？</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+                許多人拖拖拉拉錯過很多機會，因為時間不等人，寧可提早準備也不要事後懊惱後悔！
+            </div>
+        </div>
+            <div class="line"></div>
+        </div>
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>Q: 遺囑可以交代哪些事情？</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+                所有重要的事情都可以在遺囑裡交代，包含家族祭祀規定、財產分配，甚至私房錢的存放位置、金庫密碼都可以。
+            </div>
+        </div>
+            <div class="line"></div>
+        </div>
+        <div class="will-card">
+            <div class="will-header" onclick="toggleCard(this)">
+                <h3>Q: 預立遺囑一定要公證人嗎？</h3>
+                <span class="icon">▼</span>
+            </div>
+            <div class="will-content">
+                不一定。依照民法規定，若您選擇「自書遺囑」且符合法定格式（全文親筆、日期、簽名），不經過公證依然具有法律效力。
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-logo">第一顧問 Top One Consulting</div>
+        <p>專業 Professional · 精準 Precision · 夥伴 Partnership</p>
+        <div class="footer-bottom" style="margin-top: 30px; font-size: 0.8rem; opacity: 0.6;">
+            &copy; 2026 第一顧問 專業團隊. 
+        </div>
+    </footer>
+
+    <script>
+        // 1. 處理導覽列縮小效果
+        window.onscroll = function() {
+            const header = document.getElementById("mainHeader");
+            if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+                header.classList.add("shrink");
+            } else {
+                header.classList.remove("shrink");
+            }
+        };
+
+        // 2. 模擬分頁切換邏輯
+        function showPage(pageId) {
+            // 隱藏所有頁面
+            const sections = document.querySelectorAll('.page-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // 顯示指定頁面
+            document.getElementById(pageId).classList.add('active');
+
+            // 更新導覽列狀態
+            const links = document.querySelectorAll('.nav-links a');
+            links.forEach(link => link.classList.remove('active'));
+            document.getElementById('link-' + pageId).classList.add('active');
+
+            // 捲動回頂部
+            window.scrollTo(0, 0);
+        }
+
+        // 3. 摺疊卡片切換邏輯 (五種遺囑 & FAQ)
+        function toggleCard(header) {
+            const card = header.parentElement;
+            card.classList.toggle('open');
+        }
+    </script>
+
+</body>
+</html>
